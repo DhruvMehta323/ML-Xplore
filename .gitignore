@@ -1,0 +1,30 @@
+# Backend specific
+backend/.env
+backend/venv/
+backend/ENV/
+backend/*.log
+backend/database.db
+
+# Frontend specific
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Crawled data
+data/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# OS
+.DS_Store
+
+# Databases
+*.db
