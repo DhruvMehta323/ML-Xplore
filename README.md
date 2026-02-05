@@ -167,34 +167,6 @@ A full-stack web application that intelligently discovers, crawls, indexes, and 
 
 **Algorithm**: Breadth-First Search (BFS) with depth limiting
 
-```python
-# Simplified crawling algorithm
-def crawl_site(start_url, max_depth):
-    queue = deque([(start_url, 1)])  # (url, depth)
-    visited = set()
-    
-    while queue:
-        url, depth = queue.popleft()  # BFS: process in order
-        
-        if url in visited or depth > max_depth:
-            continue
-            
-        visited.add(url)
-        
-        # Extract page content
-        page = fetch_page(url)
-        title, description, links = extract_data(page)
-        tags = classify_resource(page, url)
-        
-        # Store in database
-        store_resource(url, title, description, tags)
-        
-        # Add links to queue for BFS exploration
-        for link in links:
-            if link not in visited:
-                store_link(url, link)  # Build link graph
-                queue.append((link, depth + 1))
-```
 
 **Why BFS?**
 - ✅ Explores resources level-by-level
@@ -216,30 +188,7 @@ Depth 4: Individual resources (papers, etc)  →  ~10,000 pages
 
 **Algorithm**: Term Frequency - Inverse Document Frequency
 
-```python
-# TF-IDF summary generation
-def generate_summary(title, description, content):
-    # Combine all text (title weighted more)
-    full_text = f"{title} {title} {description} {content}"
-    
-    # Create TF-IDF vectors
-    vectorizer = TfidfVectorizer(
-        max_features=25,      # Top 25 keywords
-        stop_words='english'  # Remove common words
-    )
-    
-    tfidf_matrix = vectorizer.fit_transform([full_text])
-    
-    # Get top keywords
-    feature_names = vectorizer.get_feature_names_out()
-    scores = tfidf_matrix.toarray()[0]
-    
-    # Sort by importance
-    top_indices = scores.argsort()[-25:][::-1]
-    keywords = [feature_names[i] for i in top_indices]
-    
-    return " ".join(keywords)  # Searchable summary
-```
+
 
 **Why TF-IDF?**
 - ✅ Identifies important keywords (high TF)
@@ -260,35 +209,6 @@ TF-IDF Keywords: neural networks understanding beginners
 ### 3. PageRank Calculation
 
 **Algorithm**: Iterative PageRank with damping factor
-
-```python
-# Simplified PageRank
-def calculate_pagerank(links, damping=0.85, iterations=20):
-    # Initialize: all pages start with rank 1.0
-    pages = get_all_pages()
-    pagerank = {page: 1.0 for page in pages}
-    
-    # Build graph structure
-    inbound_links = build_inbound_map(links)
-    outbound_counts = count_outbound_links(links)
-    
-    # Iterate to convergence
-    for iteration in range(iterations):
-        new_ranks = {}
-        
-        for page in pages:
-            # Sum contributions from linking pages
-            rank_sum = 0
-            for linking_page in inbound_links[page]:
-                rank_sum += pagerank[linking_page] / outbound_counts[linking_page]
-            
-            # Apply damping factor
-            new_ranks[page] = (1 - damping) + damping * rank_sum
-        
-        pagerank = new_ranks
-    
-    return pagerank
-```
 
 **Formula:**
 ```
@@ -321,56 +241,6 @@ Resource C: 1 inbound link,    PR = 0.8  →  Lower authority
 
 **Algorithm**: Multi-factor ranking combining relevance and authority
 
-```python
-# Search ranking algorithm
-def search_and_rank(query):
-    resources = fetch_all_resources()
-    
-    # Component 1: Title Matching (50% weight)
-    title_scores = []
-    for resource in resources:
-        if query.lower() in resource.title.lower():
-            title_scores.append(1.0)  # Exact match
-        else:
-            # Partial word matching
-            query_words = query.lower().split()
-            title_words = resource.title.lower().split()
-            matches = sum(1 for qw in query_words 
-                         if any(qw in tw for tw in title_words))
-            title_scores.append(matches / len(query_words))
-    
-    # Component 2: Content Relevance (30% weight)
-    vectorizer = TfidfVectorizer()
-    tfidf_matrix = vectorizer.fit_transform(
-        [r.description + " " + r.summary for r in resources]
-    )
-    query_vector = vectorizer.transform([query])
-    content_scores = (tfidf_matrix @ query_vector.T).toarray().ravel()
-    
-    # Normalize
-    content_scores = content_scores / max(content_scores)
-    
-    # Component 3: Popularity (20% weight)
-    popularity_scores = [r.popularity_score for r in resources]
-    popularity_scores = [s / max(popularity_scores) for s in popularity_scores]
-    
-    # Combine with weights
-    final_scores = [
-        0.5 * title + 0.3 * content + 0.2 * popularity
-        for title, content, popularity 
-        in zip(title_scores, content_scores, popularity_scores)
-    ]
-    
-    # Sort by score
-    ranked_results = sorted(
-        zip(resources, final_scores),
-        key=lambda x: x[1],
-        reverse=True
-    )
-    
-    return ranked_results[:20]  # Top 20
-```
-
 **Why This Weighting?**
 - **50% Title**: Most important signal for relevance
 - **30% Content**: Ensures topical match
@@ -398,38 +268,6 @@ Resource B:
 ### 5. Recommendation Algorithm
 
 **Algorithm**: Preference-based collaborative filtering
-
-```python
-# Recommendation algorithm
-def get_recommendations(user):
-    # Get user preferences
-    user_prefs = user.preferences.split(',')  # e.g., ['dataset', 'model']
-    
-    # Fetch all resources
-    resources = fetch_all_resources()
-    
-    scored_resources = []
-    for resource in resources:
-        # Get resource tags
-        resource_tags = resource.tags.split(',')
-        
-        # Calculate tag match score
-        matching_tags = set(resource_tags) & set(user_prefs)
-        tag_score = len(matching_tags)  # 0, 1, 2, ...
-        
-        # Get popularity score
-        popularity_score = resource.popularity_score
-        
-        # Hybrid score: 50% preference match + 50% popularity
-        final_score = 0.5 * tag_score + 0.5 * popularity_score
-        
-        scored_resources.append((resource, final_score))
-    
-    # Sort by score
-    scored_resources.sort(key=lambda x: x[1], reverse=True)
-    
-    return scored_resources[:20]  # Top 20
-```
 
 **How It Works:**
 
@@ -471,34 +309,6 @@ Resource C:
 
 ### Phase 1: Data Collection (Crawling)
 
-```
-1. Seed URLs (start_urls)
-   ├─→ ArXiv categories
-   ├─→ Kaggle listings  
-   ├─→ Medium topics
-   └─→ Hugging Face collections
-
-2. BFS Crawling
-   ├─→ Depth 1: Landing pages
-   ├─→ Depth 2: Category pages
-   ├─→ Depth 3: Resource listings
-   └─→ Depth 4: Individual resources
-
-3. Data Extraction
-   ├─→ Title (from <title> tag)
-   ├─→ Description (from <meta> tag)
-   ├─→ Content (from <body> text)
-   └─→ Links (from <a> tags)
-
-4. Link Graph Construction
-   ├─→ Store: (source_url, destination_url)
-   └─→ Build directed graph
-
-5. Tag Assignment
-   ├─→ URL pattern matching
-   └─→ Content keyword analysis
-```
-
 **Output:**
 - Resources table: 3,000-4,000 entries
 - Links table: 100,000-150,000 entries
@@ -506,30 +316,6 @@ Resource C:
 ---
 
 ### Phase 2: Indexing (TF-IDF)
-
-```
-1. Load Resources
-   └─→ Get: title, description, (future: content)
-
-2. Text Preprocessing
-   ├─→ Combine: title + description + content
-   ├─→ Lowercase
-   ├─→ Remove stop words
-   └─→ Tokenize
-
-3. TF-IDF Calculation
-   ├─→ Term Frequency (TF)
-   ├─→ Inverse Document Frequency (IDF)
-   └─→ TF-IDF = TF × IDF
-
-4. Keyword Extraction
-   ├─→ Sort terms by TF-IDF score
-   ├─→ Select top 25 keywords
-   └─→ Create searchable summary
-
-5. Database Update
-   └─→ Store summary in resources table
-```
 
 **Output:**
 - Each resource has searchable summary
@@ -539,28 +325,6 @@ Resource C:
 
 ### Phase 3: Ranking (PageRank)
 
-```
-1. Build Link Graph
-   ├─→ Nodes: All resources
-   └─→ Edges: Links between resources
-
-2. Initialize Ranks
-   └─→ All pages start with rank = 1.0
-
-3. Iterate (20 times)
-   ├─→ For each page:
-   │   ├─→ Calculate incoming rank contributions
-   │   ├─→ Apply damping factor (0.85)
-   │   └─→ Update rank
-   └─→ Converge to stable values
-
-4. Normalize Scores
-   └─→ Scale to 0-10 range
-
-5. Database Update
-   └─→ Store popularity_score in resources table
-```
-
 **Output:**
 - Each resource has authority score
 - High-quality resources ranked higher
@@ -569,57 +333,12 @@ Resource C:
 
 ### Phase 4: Search (Real-time)
 
-```
-1. Receive Query
-   └─→ User enters: "neural networks"
-
-2. Title Matching
-   ├─→ Exact match detection
-   └─→ Partial word matching
-
-3. TF-IDF Similarity
-   ├─→ Convert query to TF-IDF vector
-   ├─→ Compare with all resource summaries
-   └─→ Calculate cosine similarity
-
-4. Retrieve Popularity
-   └─→ Get PageRank scores
-
-5. Hybrid Ranking
-   ├─→ Combine: 50% title + 30% content + 20% popularity
-   └─→ Sort by final score
-
-6. Return Results
-   └─→ Top 20 resources
-```
-
 **Response Time:** <100ms
 
 ---
 
 ### Phase 5: Recommendations (User-based)
 
-```
-1. Load User Profile
-   └─→ preferences = ["dataset", "model"]
-
-2. Fetch Resources
-   └─→ All resources from database
-
-3. Tag Matching
-   ├─→ Count matching tags
-   └─→ resource_tags ∩ user_preferences
-
-4. Combine with Popularity
-   └─→ score = 0.5 × matches + 0.5 × popularity
-
-5. Rank and Filter
-   ├─→ Sort by score
-   └─→ Return top 20
-
-6. Track Interaction
-   └─→ When user clicks → store in history
-```
 
 **Updates:** Dynamic based on user behavior
 
@@ -627,27 +346,21 @@ Resource C:
 
 ## 📊 Data Sources
 
-| Source | Type | Depth | Target | Coverage |
-|--------|------|-------|--------|----------|
-| **ArXiv** | Papers | 4 | 400 | cs.LG, cs.AI, cs.CV, cs.CL |
-| **Hugging Face** | Models/Datasets | 3 | 400 | Models, Datasets, Papers |
-| **Papers with Code** | Papers/Datasets | 4 | 300 | Methods, Datasets, SOTA |
-| **Kaggle** | Datasets/Models | 3 | 250 | Datasets, Models |
-| **Medium** | Articles | 4 | 450 | ML, DL, AI topics |
-| **Towards Data Science** | Articles | 4 | 400 | ML, DL, AI |
-| **ML Mastery** | Tutorials | 3 | 200 | DL, NLP, ML |
-| **Analytics Vidhya** | Articles | 3 | 100 | Blog posts |
-| **KDnuggets** | Articles | 3 | 100 | ML news |
-| **OpenAI** | Research | 3 | 80 | Research blog |
-| **Google AI** | Research | 3 | 100 | AI blog |
-| **DeepMind** | Research | 3 | 80 | Research blog |
+
+**ArXiv**
+**Hugging Face**
+**Papers with Code** 
+**Medium** 
+**Towards Data Science**
+**Analytics Vidhya** 
+**KDnuggets** 
+**OpenAI**
+**Google AI** 
+**DeepMind** 
 
 **Total Target:** 1000+ resources, 100,000+ links
 
 ---
-
-
-## 🚀 Quick Start
 
 ### Prerequisites
 
