@@ -20,7 +20,7 @@ const Navbar = () => {
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">
           <span className="logo-icon">🧠</span>
-          <span className="logo-text">ML Discovery</span>
+          <span className="logo-text">ML Xplore</span>
         </Link>
 
         {user && (

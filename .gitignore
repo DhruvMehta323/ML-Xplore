@@ -14,8 +14,6 @@ frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
 
-# Crawled data
-data/
 
 # Python
 __pycache__/
@@ -26,5 +24,3 @@ venv/
 # OS
 .DS_Store
 
-# Databases
-*.db
