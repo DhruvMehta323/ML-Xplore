@@ -642,52 +642,10 @@ Resource C:
 | **Google AI** | Research | 3 | 100 | AI blog |
 | **DeepMind** | Research | 3 | 80 | Research blog |
 
-**Total Target:** 3,000+ resources, 100,000+ links
+**Total Target:** 1000+ resources, 100,000+ links
 
 ---
 
-## 📁 Project Structure
-
-```
-ml-resource-app/
-├── backend/                          # Flask API Server
-│   ├── app.py                       # REST API with search & recommendations
-│   ├── mega_crawler.py              # BFS crawler (100k+ links)
-│   ├── topic_crawler.py             # Niche topic crawler
-│   ├── indexer.py                   # TF-IDF summary generator
-│   ├── pagerank.py                  # PageRank calculator
-│   ├── db.py                        # Database schema setup
-│   ├── check_db.py                  # Diagnostics tool
-│   ├── test_crawler.py              # Crawler testing
-│   └── requirements.txt             # Python dependencies
-│
-├── frontend/                         # React Application
-│   ├── src/
-│   │   ├── components/              # Reusable components
-│   │   │   ├── Navbar.jsx          # Navigation bar
-│   │   │   └── ResourceCard.jsx    # Resource display card
-│   │   ├── pages/                   # Main pages
-│   │   │   ├── Login.jsx           # Authentication
-│   │   │   ├── Register.jsx        # User registration
-│   │   │   ├── Search.jsx          # Search interface
-│   │   │   ├── Recommendations.jsx # Personalized recommendations
-│   │   │   ├── History.jsx         # User history
-│   │   │   └── Admin.jsx           # Admin dashboard
-│   │   ├── styles/                  # CSS styles
-│   │   ├── api.js                   # API client (Axios)
-│   │   ├── App.jsx                  # Root component
-│   │   └── main.jsx                 # Entry point
-│   ├── package.json
-│   └── vite.config.js
-│
-├── data/                         # SQLite database
-│   └── database.db                  # Auto-generated
-│
-├── README.md                         # This file
-├── .gitignore                        # Git ignore rules
-```
-
----
 
 ## 🚀 Quick Start
 
@@ -745,80 +703,6 @@ npm run dev                # http://localhost:3000
 - **Backend API**: http://localhost:5000
 - **API Health**: http://localhost:5000/api/health
 
----
-
-## 🎯 Usage Examples
-
-### 1. Search for Resources
-
-```bash
-# Via API
-curl "http://localhost:5000/api/search?query=deep+learning"
-
-# With tag filter
-curl "http://localhost:5000/api/search?query=mnist&tags[]=dataset"
-```
-
-**Response:**
-```json
-[
-  {
-    "url": "https://arxiv.org/abs/...",
-    "title": "Deep Learning for Computer Vision",
-    "description": "Comprehensive survey of deep learning...",
-    "tags": "research paper, article",
-    "score": 0.87
-  },
-  ...
-]
-```
-
-### 2. Get Recommendations
-
-```bash
-# Requires authentication
-curl -H "Authorization: Bearer <token>" \
-     http://localhost:5000/api/recommendations
-```
-
-### 3. Register User
-
-```bash
-curl -X POST http://localhost:5000/api/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@example.com",
-    "password": "secure123",
-    "name": "John Doe",
-    "preferences": ["dataset", "research paper", "model"]
-  }'
-```
-
----
-
-## 🧪 Testing
-
-### Backend Tests
-
-```bash
-cd backend
-
-# Check database status
-python check_db.py
-
-# Test API endpoints
-curl http://localhost:5000/api/health
-curl http://localhost:5000/api/admin/stats
-```
-
-### Frontend Tests
-
-```bash
-cd frontend
-npm test  # Run test suite (if configured)
-```
-
----
 
 ## 📈 Performance Metrics
 
@@ -876,40 +760,8 @@ npm test  # Run test suite (if configured)
 - ✅ SQL injection prevention (parameterized queries)
 - ⚠️ Passwords stored in plain text (development only)
 
-### Production Recommendations
-- 🔒 Use bcrypt for password hashing
-- 🔒 Enable HTTPS only
-- 🔒 Implement rate limiting
-- 🔒 Add CSRF protection
-- 🔒 Secure JWT secret
-- 🔒 Input sanitization
-- 🔒 Database access controls
-
 ---
 
-## 🚢 Deployment
-
-### Backend (Example: Heroku)
-
-```bash
-# Prepare
-echo "web: gunicorn app:app" > backend/Procfile
-pip freeze > backend/requirements.txt
-
-# Deploy
-heroku create ml-xplore-api
-git subtree push --prefix backend heroku main
-```
-
-### Frontend (Example: Vercel)
-
-```bash
-cd frontend
-npm run build
-vercel --prod
-```
-
----
 
 ## 🤝 Contributing
 
